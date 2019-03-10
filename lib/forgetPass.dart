@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:async/async.dart';
 import 'dart:convert';
-import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:first_project/home/home.dart';
-import 'package:first_project/history.dart';
 import 'package:first_project/mainlogin.dart';
-//import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:lottie_flutter/lottie_flutter.dart';
 import 'dart:async';
 
-import 'package:path/path.dart';
 @override
 
 class ChangePass extends StatefulWidget {
@@ -22,9 +15,7 @@ class ChangePass extends StatefulWidget {
 }
 
 class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateMixin{
-
-  int _counter = 0;
-
+   int _counter = 0;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   var passKey = GlobalKey<FormFieldState>();
@@ -33,7 +24,6 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _nameController.addListener(onChanged);
-
     _registerPassController.addListener(onChanged);
     _emailController.addListener(onChanged);
     _mobileController.addListener(onChanged);
@@ -43,48 +33,38 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
 
     );
 
-    _controller.addStatusListener((status) {
-      print(_controller.value);
-      if(status == AnimationStatus.completed) {
-
-
-      }
-
-    });
   }
+   LottieComposition _composition;
+   AnimationController _controller;
+   String groupValue;
+   int loginId;
+   String fullName, email, password;
+   int phoneNumber;
+   bool checkErrorCheckbox=true;
+   bool setLoading=false;
+   bool setLogin=false;
 
-
-  LottieComposition _composition;
-  String _assetName;
-  AnimationController _controller;
-
-
-
-  onChanged(){
+  onChanged() async {
     if(_counter>0) {
-
-      _submitNew();
+      submitNew();
     }
   }
 
-
   void _loadButtonCompleted(String assetName,BuildContext context)  {
     loadAsset(assetName).then((LottieComposition composition) {
-
-      print(_controller.value);
 
       if(_controller.value>0){
         _controller.reset();
         _controller.forward();
         setState(() {
-          _assetName = assetName;
+
           _composition = composition;
 
         });
 
       }else{
         setState(() {
-          _assetName = assetName;
+
           _composition = composition;
           _controller.forward();
         });
@@ -93,67 +73,25 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
     });
   }
 
-
-
-  String _email;
-  String _name;
-  String _password;
-  String _passwordConfirm;
-  int _mobile;
-  String groupValue;
-  var ImagePathFull='';
-  int loginId;
-  bool _validate = false;
-  String fullName, email, password;
-  int phoneNumber;
-  bool checkErrorCheckbox=true;
-  bool setLoading=false;
-  bool setLogin=false;
-  //   This is for Obscure text
-  // Initially password is obscure
-  bool _obscureText = true;
-
-  // Toggles the password show status
-  void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
-
-
-
-  void _submit (String fullName, String email, String password, String phoneNumber,String _color1, BuildContext context) async{
-
-
+  void _submit (String fullName, String email, String password, String phoneNumber, BuildContext context) async{
     final form = formKey.currentState;
 
     setState(() {
       this.setLoading=true;
       this._counter++;
     });
-
-
     if (form.validate()) {
-
-
-      form.save();
-
-      _performReg(fullName, email, password, phoneNumber,_color1,this.groupValue,this.ImagePathFull, context);
-
-    }else{
-
-      Timer timer = new Timer(new Duration(seconds: 1), () {
+     form.save();
+      _performReg(fullName, email, password, phoneNumber, context);
+      }else{
+          new Timer(new Duration(seconds: 1), () {
         this.setLoading=false;
         setState(() {
-
+          });
         });
-
-      });
-
-
-    }
+      }
   }
-  _submitNew(){
+   submitNew() {
     final form = formKey.currentState;
 
     if (form.validate()) {
@@ -162,18 +100,14 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
   }
 
 
-  void _performReg(String fullName, String email, String password, String phoneNumber,String _color1,String groupValue,String uploadFile,BuildContext context) async {
+  void _performReg(String fullName, String email, String password, String phoneNumber,BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-//   print(prefs.getInt("loginId"));
-
     var req = {
       "id": prefs.getInt("loginId") ?? 17,
       "password":password,
       
     };
-
-
-
+    // ignore: unused_local_variable
     final res =  await http.post("http://3.0.103.32/Flutter/changePassword.php",
         body: json.encode(req),
         headers:{
@@ -181,30 +115,19 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
         }
     );
 
-    final data = json.decode(res.body);
-    print(res.body);
-
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    prefs.setInt("loginId",data['id']);
-//    prefs.setString("Username",data['username']);
-//    prefs.setString("ProfileImg",data['image']);
     _loadButtonCompleted("assets/checked_done_.json",context);
     setState(() {
       setLogin=true;
     });
 
-    Timer timer = new Timer(new Duration(seconds: 3), () {
-
-//        _showAlert(context, _composition, _controller);
-    prefs.remove("loginId");
+  // ignore: unused_local_variable
+  Timer timer=new Timer(new Duration(seconds: 3), () {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) =>  MainLoginPage(loginVal: new LoginPageval(prefs.getString("email"),password))
-      )  );
+      ));
 
     });
-
   }
-
   String validateEmail(String value) {
     Pattern pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
@@ -214,21 +137,7 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
     else
       return null;
   }
-
-  dropdownValidate(String value){
-    if (value==null) {
-      return 'Select Color';
-    }else{
-      return null;
-    }
-
-  }
-
-  List<String> _colors = <String>['', 'red', 'green', 'blue', 'orange'];
-  String _color = '';
-
   final _nameController = TextEditingController();
-
   final _emailController = TextEditingController();
   final _registerPassController = TextEditingController();
   final _mobileController = TextEditingController();
@@ -237,11 +146,9 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
+
     final w = MediaQuery.of(context).size.width;
 
-
-    String _mobile;
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: new Scaffold(
@@ -255,9 +162,8 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
             leading: new IconButton(
               icon: new Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () =>  Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) =>  MainLoginPage()
-
-              )  ),
+                  context, MaterialPageRoute(builder: (context) =>  MainLoginPage(loginVal: new LoginPageval(null, null),)
+                 )  ),
 
             ),
           ),
@@ -280,7 +186,7 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
                           controller: _registerPassController,
                           validator: (val) =>
                           val.length < 6 ? 'Password too short.' : null,
-                          onSaved: (val) => _password = val,
+
                           obscureText: true,
                         ),
                         TextFormField(
@@ -330,13 +236,8 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
                               String email = _emailController.text;
                               String password = _registerPassController.text;
                               String phoneNumber = _mobileController.text;
-                              String _color1 = this._color;
+                              _submit(fullName, email, password, phoneNumber, context);
 
-
-
-                              _submit(fullName, email, password, phoneNumber,_color1, context);
-
-//  Navigator.of(context).pushNamed(HomePage.tag);
                             },
                             padding: EdgeInsets.all(12),
                             color: Colors.red,
@@ -355,7 +256,6 @@ class _ChangePassState extends State<ChangePass> with SingleTickerProviderStateM
         ));
   }
 }
-
 
 class DetailScreen extends StatelessWidget {
   final Person person;
@@ -392,8 +292,6 @@ class DetailScreen extends StatelessWidget {
   }
 }
 
-
-
 Future<LottieComposition> loadAsset(String assetName) async {
   return await rootBundle
       .loadString(assetName)
@@ -406,15 +304,4 @@ class Person {
 
   Person(this.name, this.age);
 }
-
-
-class UserInput{
-  String fullName, email, password, phoneNumber;
-
-  UserInput(this.fullName, this.email, this.password, this.phoneNumber);
-  Map toJson(){
-    return{"fullName": fullName, "email": email, "password": password, "phoneNumber": phoneNumber};
-  }
-}
-
 

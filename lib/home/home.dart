@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:first_project/history.dart';
-import 'package:first_project/login.dart';
 import 'package:first_project/logout.dart';
 import 'package:first_project/mainlogin.dart';
 import 'dart:convert';
@@ -27,7 +26,7 @@ class _HomeState extends State<Home> {
 
     if(prefs.getInt("loginId")==null){
       Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (build) => MainLoginPage()));
+          MaterialPageRoute(builder: (build) => MainLoginPage(loginVal: new LoginPageval(null, null),)));
 
 
     }else {

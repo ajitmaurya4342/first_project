@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-
-//import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:first_project/home/home.dart';
-//import 'package:first_project/history.dart';
 import 'package:first_project/mainlogin.dart';
 import 'package:image_picker_modern/image_picker_modern.dart';
-
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:lottie_flutter/lottie_flutter.dart';
@@ -14,7 +9,6 @@ import 'package:async/async.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
-
 import 'package:path/path.dart';
 @override
 
@@ -45,19 +39,8 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin{
 
     );
 
-    _controller.addStatusListener((status) {
-      print(_controller.value);
-      if(status == AnimationStatus.completed) {
-
-
-      }
-
-    });
   }
-
-
   LottieComposition _composition;
-  String _assetName;
   AnimationController _controller;
 
 
@@ -79,50 +62,28 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin{
         _controller.reset();
         _controller.forward();
         setState(() {
-          _assetName = assetName;
           _composition = composition;
 
         });
 
       }else{
         setState(() {
-          _assetName = assetName;
           _composition = composition;
           _controller.forward();
         });
       }
-
     });
   }
 
 
-
-
-
-  String _email;
-  String _name;
-  String _password;
-  String _passwordConfirm;
-  int _mobile;
   String groupValue;
-  var ImagePathFull='';
-  bool _validate = false;
+  var imagePathFull='';
+
   String fullName, email, password;
   int phoneNumber;
   bool checkErrorCheckbox=true;
  bool setLoading=false;
  bool setLogin=false;
-  //   This is for Obscure text
-  // Initially password is obscure
-  bool _obscureText = true;
-
-  // Toggles the password show status
-  void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
-
   validateCheckbox(){
     for(var i=0;i<this.hobbies.length;i++){
 
@@ -146,8 +107,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin{
 
     }
 
-
-  }
+ }
 
   void _submit(String fullName, String email, String password, String phoneNumber,String _color1, BuildContext context) {
 
@@ -161,10 +121,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin{
     for(var i=0;i<this.hobbies.length;i++){
 
       if(this.hobbies[i]['value']==false){
-
-
-        setState(() {
+      setState(() {
           this.checkErrorCheckbox=false;
+          // ignore: unused_local_variable
           Timer timer = new Timer(new Duration(seconds: 1), () {
             this.setLoading=false;
             setState(() {
@@ -184,18 +143,14 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin{
     }
 
 
-    if (form.validate() && this.groupValue!=null && this.checkErrorCheckbox==true && this.ImagePathFull!='') {
+    if (form.validate() && this.groupValue!=null && this.checkErrorCheckbox==true && this.imagePathFull!='') {
+    form.save();
 
-
-      form.save();
-//
-//      // Email & password matched our validation rules
-//      // and are saved to _email and _password fields.
-//      _performReg();
-      _performReg(fullName, email, password, phoneNumber,_color1,this.groupValue,this.ImagePathFull, context);
+      _performReg(fullName, email, password, phoneNumber,_color1,this.groupValue,this.imagePathFull, context);
 
     }else{
 
+      // ignore: unused_local_variable
       Timer timer = new Timer(new Duration(seconds: 1), () {
         this.setLoading=false;
         setState(() {
@@ -218,24 +173,20 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin{
 
   void _performReg(String fullName, String email, String password, String phoneNumber,String _color1,String groupValue,String uploadFile,BuildContext context) async {
 
+    // ignore: unused_local_variable
     final res =  await http.post("http://3.0.103.32/Flutter/addVendorMaster.php",
-        body: json.encode({"fullName": fullName,"_color1": _color1,"hobbies":this.hobbies,"ImagePathFull": uploadFile,"groupValue": groupValue, "email": email, "password": password, "phoneNumber": phoneNumber,"id":""}),
+        body: json.encode({"fullName": fullName,"_color1": _color1,"hobbies":this.hobbies,"imagePathFull": uploadFile,"groupValue": groupValue, "email": email, "password": password, "phoneNumber": phoneNumber,"id":""}),
         headers:{
           "Accept": "application/json"
         }
     );
 
-    final data = json.decode(res.body);
-
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    prefs.setInt("loginId",data['id']);
-//    prefs.setString("Username",data['username']);
-//    prefs.setString("ProfileImg",data['image']);
     _loadButtonCompleted("assets/checked_done_.json",context);
     setState(() {
       setLogin=true;
     });
 
+    // ignore: unused_local_variable
     Timer timer = new Timer(new Duration(seconds: 3), () {
 
 //        _showAlert(context, _composition, _controller);
@@ -294,11 +245,9 @@ File image = await ImageCropper.cropImage(
       maxHeight: 512,
     );
 
+ // ignore: unused_local_variable
  var bytes = image.readAsBytesSync();
-
-
-
-    var stream = new http.ByteStream(DelegatingStream.typed(image.openRead()));
+   var stream = new http.ByteStream(DelegatingStream.typed(image.openRead()));
     var length = await image.length();
 
     var uri = Uri.parse("http://3.0.103.32/Flutter/uploadFile.php");
@@ -315,7 +264,7 @@ File image = await ImageCropper.cropImage(
     response.stream.transform(utf8.decoder).listen((value) {
       print(value);
       setState(() {
-        ImagePathFull=value;
+        imagePathFull=value;
       });
 
 
@@ -381,11 +330,8 @@ File image = await ImageCropper.cropImage(
 
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
 
-
-    String _mobile;
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: new Scaffold(
@@ -399,7 +345,7 @@ File image = await ImageCropper.cropImage(
             leading: new IconButton(
               icon: new Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () =>  Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) =>  MainLoginPage()
+                  context, MaterialPageRoute(builder: (context) =>  MainLoginPage(loginVal: new LoginPageval(email, password),)
               )  ),
 
             ),
@@ -421,10 +367,7 @@ File image = await ImageCropper.cropImage(
                           controller: _nameController,
                           keyboardType: TextInputType.text,
                           validator: validateName,
-                          onSaved: (String val){
-                            _name = val;
 
-                          },
 
                         ),
                         TextFormField(
@@ -432,7 +375,7 @@ File image = await ImageCropper.cropImage(
                           keyboardType: TextInputType.emailAddress,
                           validator: validateEmail,
                           controller: _emailController,
-                          onSaved: (val) => _email = val,
+
                         ),
                         TextFormField(
 //                          key: passKey,
@@ -440,7 +383,7 @@ File image = await ImageCropper.cropImage(
                           controller: _registerPassController,
                           validator: (val) =>
                           val.length < 6 ? 'Password too short.' : null,
-                          onSaved: (val) => _password = val,
+
                           obscureText: true,
                         ),
                         TextFormField(
@@ -463,7 +406,7 @@ File image = await ImageCropper.cropImage(
                           keyboardType: TextInputType.phone,
                           validator: validateMobile,
                           controller: _mobileController,
-                          onSaved: (val) => _mobile = val,
+
                         ),
 
                         new FormField<String>(
@@ -600,7 +543,7 @@ File image = await ImageCropper.cropImage(
                               ),
 
                             ),
-                            this.ImagePathFull=='' && this._counter>0 ?
+                            this.imagePathFull=='' && this._counter>0 ?
                             new Container(
                               padding: EdgeInsets.only(top:16, right:8),
                               child: Text("Select File",
@@ -635,7 +578,7 @@ File image = await ImageCropper.cropImage(
                               margin: EdgeInsets.only(top: 10.0,right:15.0),
                             ),
                             GestureDetector(
-                              child: this.ImagePathFull!=''?
+                              child: this.imagePathFull!=''?
                               Container(
 
                                 height:100,
@@ -643,7 +586,7 @@ File image = await ImageCropper.cropImage(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(50),
                                     image: DecorationImage(
-                                        image: NetworkImage("http://3.0.103.32/uploadFlutter/dummy/${this.ImagePathFull}"),
+                                        image: NetworkImage("http://3.0.103.32/uploadFlutter/dummy/${this.imagePathFull}"),
                                         fit: BoxFit.cover),
 
                                   ),
@@ -653,7 +596,7 @@ File image = await ImageCropper.cropImage(
                                  ),
 
                               onTap: (){
-                                Navigator.push(context, new MaterialPageRoute(builder: (context) => new DetailScreen(person: new Person(this.ImagePathFull,"28"))));
+                                Navigator.push(context, new MaterialPageRoute(builder: (context) => new DetailScreen(person: new Person(this.imagePathFull,"28"))));
                               },
 
 

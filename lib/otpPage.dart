@@ -1,19 +1,12 @@
-
-import 'package:first_project/otpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:lottie_flutter/lottie_flutter.dart';
-import 'package:first_project/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:first_project/home/home.dart';
 import 'package:first_project/forgetPass.dart';
 import 'package:pin_entry_text_field/pin_entry_text_field.dart';
-//import 'dart:ui';
-
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+
 
 
 class OtpPage extends StatefulWidget {
@@ -51,14 +44,12 @@ class _OtpPageState extends State<OtpPage> with TickerProviderStateMixin{
         _controller.reset();
         _controller.forward();
         setState(() {
-          _assetName = assetName;
           _composition = composition;
 
         });
 
       }else{
         setState(() {
-          _assetName = assetName;
           _composition = composition;
           _controller.forward();
         });
@@ -68,14 +59,13 @@ class _OtpPageState extends State<OtpPage> with TickerProviderStateMixin{
   }
 
   LottieComposition _composition;
-  String _assetName;
   int setLogin=0;
   String pinGenerate = "";
   AnimationController _controller;
   @override
   Widget build(BuildContext context) {
 
-    //Navigator.pop(context);
+    // ignore: unused_local_variable
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
     return Container(
@@ -109,6 +99,7 @@ class _OtpPageState extends State<OtpPage> with TickerProviderStateMixin{
 //                      setLogin=2;
 //                    });
 
+                    // ignore: unused_local_variable
                     Timer timer = new Timer(new Duration(seconds: 3), () {
 //        print(prefs.getInt('Otp'));
 
